@@ -1,9 +1,9 @@
-from django.contrib import admin   # 🔥 ADD THIS
+from django.contrib import admin   
 from django.urls import path, include
 from .views import login_page, register_page, dashboard_page
 
 urlpatterns = [
-    path('admin/', admin.site.urls),   # 🔥 IMPORTANT
+    path('admin/', admin.site.urls),   
 
     path('', login_page),
     path('register/', register_page),

@@ -4,26 +4,26 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
 
 
-# 🔥 CREATE FORM
+
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('email', 'full_name')
 
 
-# 🔥 UPDATE FORM
+
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('email', 'full_name', 'role', 'is_staff')
 
 
-# 🔥 ADMIN CONFIG
+
 class CustomUserAdmin(BaseUserAdmin):
     model = User
 
-    add_form = CustomUserCreationForm   # 🔥 IMPORTANT
-    form = CustomUserChangeForm         # 🔥 IMPORTANT
+    add_form = CustomUserCreationForm  
+    form = CustomUserChangeForm         
 
     list_display = ('email', 'full_name', 'role', 'is_staff')
     list_filter = ('role', 'is_staff', 'is_superuser')

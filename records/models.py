@@ -1,7 +1,4 @@
-"""
-Financial Records model.
-Represents income/expense entries with category, date, and notes.
-"""
+
 from django.db import models
 from django.utils import timezone
 from users.models import User
@@ -55,7 +52,7 @@ class FinancialRecord(models.Model):
         null=True,
         related_name='records_created',
     )
-    is_deleted = models.BooleanField(default=False)  # Soft delete flag
+    is_deleted = models.BooleanField(default=False)  
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

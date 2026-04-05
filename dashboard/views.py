@@ -12,7 +12,7 @@ from records.models import FinancialRecord, TransactionType
 from users.permissions import IsAnalystOrAdmin, IsAnyRole
 
 
-# 🔥 BASE QUERY
+
 def _base_qs():
     return FinancialRecord.objects.filter(is_deleted=False)
 
@@ -98,7 +98,7 @@ class MonthlyTrendsView(APIView):
     def get(self, request):
         qs = _base_qs()
 
-        # 🔥 FILTER
+       
         start = request.query_params.get("start")
         end = request.query_params.get("end")
 

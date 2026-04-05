@@ -1,8 +1,4 @@
-"""
-Views for Financial Records CRUD with role-based access control.
-- GET (list/retrieve): All authenticated users (viewer, analyst, admin)
-- POST / PUT / PATCH / DELETE: Admin only
-"""
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter

@@ -1,6 +1,4 @@
-"""
-Serializers for User model.
-"""
+
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import User, Role
@@ -70,12 +68,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'full_name', 'password']  # ❌ role removed
+        fields = ['email', 'full_name', 'password']  
 
     def create(self, validated_data):
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
-        user.role = 'viewer'  # 🔥 force viewer
+        user.role = 'viewer' 
         user.save()
         return user

@@ -1,6 +1,4 @@
-"""
-Custom DRF permission classes enforcing role-based access control.
-"""
+
 from rest_framework.permissions import BasePermission
 
 

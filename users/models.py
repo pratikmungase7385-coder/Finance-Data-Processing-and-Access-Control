@@ -1,7 +1,4 @@
-"""
-Users app models.
-Custom User model extending AbstractBaseUser with role-based access.
-"""
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
@@ -54,7 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f'{self.full_name} ({self.email}) - {self.role}'
 
-    # ---- Role helpers ----
+   
     @property
     def is_admin(self):
         return self.role == Role.ADMIN

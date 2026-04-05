@@ -1,6 +1,4 @@
-"""
-Serializers for FinancialRecord model.
-"""
+
 from rest_framework import serializers
 from decimal import Decimal
 from .models import FinancialRecord, TransactionType, Category
