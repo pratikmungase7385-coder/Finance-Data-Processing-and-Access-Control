@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finance Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-light" onload="loadDashboard()">
+
+<div class="container mt-3 px-2">
+
+    <h4 class="text-center mb-4">Finance Dashboard</h4>
+
+    <!-- FILTER -->
+    <div class="row mb-3">
+        <div class="col-12 col-md-4 mb-2">
+            <input type="date" id="start" class="form-control">
+        </div>
+        <div class="col-12 col-md-4 mb-2">
+            <input type="date" id="end" class="form-control">
+        </div>
+        <div class="col-12 col-md-4 mb-2">
+            <button class="btn btn-primary w-100" onclick="loadDashboard()">Apply Filter</button>
+        </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="row text-center mb-3">
+        <div class="col-12 col-md-4 mb-2">
+            <div class="card p-3 shadow-sm">
+                <h6>Income</h6>
+                <h4 id="income">0</h4>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-2">
+            <div class="card p-3 shadow-sm">
+                <h6>Expense</h6>
+                <h4 id="expense">0</h4>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-2">
+            <div class="card p-3 shadow-sm">
+                <h6>Balance</h6>
+                <h4 id="balance">0</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="row">
+
+        <!-- PIE -->
+        <div class="col-12 col-md-6 text-center mb-4">
+            <h6>Category Expense</h6>
+            <div style="width:100%; max-width:280px; height:280px; margin:auto;">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- LINE -->
+        <div class="col-12 col-md-6 mb-4">
+            <h6 class="text-center">Monthly Trend</h6>
+            <div style="height:300px;">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <h6>Recent Activity</h6>
+    <div class="table-responsive">
+        <table class="table table-bordered bg-white">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="tableData"></tbody>
+        </table>
+    </div>
+
+    <button class="btn btn-dark w-100 mt-3" onclick="logout()">Logout</button>
+
+</div>
+
+<script>
+
+let pieChart = null;
+let lineChart = null;
+
+function loadDashboard() {
+
+    let start = document.getElementById("start").value;
+    let end = document.getElementById("end").value;
+
+    let query = `?start=${start}&end=${end}`;
+
+    let headers = {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+    };
+
+    // KPI
+    fetch('/api/dashboard/overview/' + query, {headers})
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("income").innerText = data.total_income;
+        document.getElementById("expense").innerText = data.total_expenses;
+        document.getElementById("balance").innerText = data.net_balance;
+    });
+
+    // PIE
+    fetch('/api/dashboard/category-breakdown/' + query, {headers})
+    .then(res => res.json())
+    .then(data => {
+
+        let labels = data.categories.map(c => c.category);
+        let values = data.categories.map(c => c.expense);
+
+        if (pieChart) pieChart.destroy();
+
+        pieChart = new Chart(document.getElementById("categoryChart"), {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#2196F3',
+                        '#FFC107',
+                        '#FF5722',
+                        '#9C27B0'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    });
+
+    // LINE
+    fetch('/api/dashboard/monthly-trends/' + query, {headers})
+    .then(res => res.json())
+    .then(data => {
+
+        let labels = data.trends.map(t => t.month);
+        let income = data.trends.map(t => t.income);
+        let expense = data.trends.map(t => t.expense);
+
+        if (lineChart) lineChart.destroy();
+
+        lineChart = new Chart(document.getElementById("monthlyChart"), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Income', data: income, borderColor: '#4CAF50' },
+                    { label: 'Expense', data: expense, borderColor: '#F44336' }
+                ]
+            }
+        });
+    });
+
+    // TABLE
+    fetch('/api/dashboard/recent-activity/', {headers})
+    .then(res => res.json())
+    .then(data => {
+
+        let rows = "";
+
+        data.records.forEach(r => {
+            rows += `
+                <tr>
+                    <td>${r.id}</td>
+                    <td>${r.amount}</td>
+                    <td>${r.transaction_type}</td>
+                    <td>${r.category}</td>
+                    <td>${r.date}</td>
+                </tr>
+            `;
+        });
+
+        document.getElementById("tableData").innerHTML = rows;
+    });
+}
+
+// LOGOUT
+function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+}
+
+</script>
+
+</body>
+</html>
